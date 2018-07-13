@@ -19,13 +19,14 @@ const client = new ApolloClient({
   link,
 });
 console.log('HI');
-const ExchangeRates = () => (
+const BookList = () => (
   <Query
     query={gql`
       {
         books {
           author
           title
+          cookie
         }
       }
     `}
@@ -33,21 +34,24 @@ const ExchangeRates = () => (
     {({ loading, error, data }) => {
       if (loading) return <p>Loading...</p>;
       if (error) return <p>Error :(</p>;
-
-      return data.books.map(({ author, title }) => (
-        <div key={author}>
-          <p>{`${author}: ${title}`}</p>
-        </div>
-      ));
+      return <div>
+        <p><b>Cookie:</b> {data.books[0].cookie}</p>
+        <h2>List of Books</h2>
+        {data.books.map(({ author, title, cookie }) => (
+          <div key={author}>
+            <p><b>{`${author}:`}</b> {`${title}`}</p>
+          </div>
+        ))}
+      </div>
     }}
   </Query>
 );
 
 const App = () => (
   <ApolloProvider client={client}>
-    <div>
-      <h2>My first Apollo app</h2>
-      <ExchangeRates/>
+    <div style={{marginLeft:15 + 'px'}}>
+      <h2>Apollo app</h2>
+      <BookList/>
     </div>
   </ApolloProvider>
 );

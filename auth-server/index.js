@@ -21,6 +21,7 @@ const typeDefs = gql`
   type Book {
     title: String
     author: String
+    cookie: String
   }
 
   # The "Query" type is the root of all GraphQL queries.
@@ -33,11 +34,23 @@ const typeDefs = gql`
 
 const resolvers = {
   Query: {
-    books: () => books,
+    books: (parent, args, context) => books.map(itm => {
+      return {
+        title: itm.title,
+        author: itm.author,
+        cookie: context.session.id,
+      }
+    }),
   },
 };
 
-const server = new ApolloServer({ typeDefs, resolvers });
+const server = new ApolloServer({ 
+  typeDefs,
+  resolvers,
+  context: ({ req }) => ({
+    session: req.session,
+  })
+});
 
 // This `listen` method launches a web-server.  Existing apps
 // can utilize middleware options, which we'll discuss later.
