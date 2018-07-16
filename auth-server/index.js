@@ -7,25 +7,23 @@ const books = [
   {
     title: 'Harry Potter and the Chamber of Secrets',
     author: 'J.K. Rowling',
+    secret: 'Hagrid'
   },
   {
     title: 'Jurassic Park',
     author: 'Michael Crichton',
+    secret: 'raptor'
   },
 ];
 
 const typeDefs = gql`
-  # Comments in GraphQL are defined with the hash (#) symbol.
 
-  # This "Book" type can be used in other type declarations.
   type Book {
     title: String
     author: String
-    cookie: String
+    secret: String
   }
 
-  # The "Query" type is the root of all GraphQL queries.
-  # (A "Mutation" type will be covered later on.)
   type Query {
     "This is documentation"
     books: [Book]
@@ -38,7 +36,7 @@ const resolvers = {
       return {
         title: itm.title,
         author: itm.author,
-        cookie: context.session.id,
+        secret: itm.secret,
       }
     }),
   },
@@ -56,7 +54,6 @@ const server = new ApolloServer({
     session: req.session,
   }),
 });
-
 
 const app = express();
 app.use(session({

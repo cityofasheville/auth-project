@@ -23,7 +23,7 @@ const BookList = () => (
         books {
           author
           title
-          cookie
+          secret
         }
       }
     `}
@@ -33,12 +33,11 @@ const BookList = () => (
       if (loading) return <p>Loading...</p>;
       if (error) return <p>Error :(</p>;
       return <div>
-        <p>Cookie? - {document.cookie}{console.log('cookie', document.cookie)}</p>
-        <p><b>Cookie:</b> {data.books[0].cookie}</p>
         <h2>List of Books</h2>
-        {data.books.map(({ author, title, cookie }) => (
+        {data.books.map(({ author, title, secret }) => (
           <div key={author}>
             <p><b>{`${author}:`}</b> {`${title}`}</p>
+            <p>The secret is {secret}</p>
           </div>
         ))}
       </div>
@@ -51,6 +50,7 @@ const App = () => (
     <div style={{marginLeft:15 + 'px'}}>
       <h2>Apollo app</h2>
       <BookList/>
+      <a href='/login'>Login</a>
     </div>
   </ApolloProvider>
 );
