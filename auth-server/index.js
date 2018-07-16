@@ -44,26 +44,21 @@ const resolvers = {
   },
 };
 
+const corsOptions = {
+  origin: 'http://localhost:3000',
+  credentials: true,
+};
+
 const server = new ApolloServer({ 
   typeDefs,
   resolvers,
   context: ({ req }) => ({
     session: req.session,
-  })
+  }),
 });
 
-// This `listen` method launches a web-server.  Existing apps
-// can utilize middleware options, which we'll discuss later.
-// server.listen().then(({ url }) => {
-//   console.log(`🚀  Server ready at ${url}`);
-// });
 
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  credentials: true,
-};
 const app = express();
-app.use(cors(corsOptions));
 app.use(session({
   name: 'ejid',
   secret: 'my little secret',
@@ -75,6 +70,7 @@ app.use(session({
     maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
   },
 }));
+app.use(cors(corsOptions));
 
 app.use(function (req, res, next) {
   if (!req.session.views) {
@@ -85,7 +81,11 @@ app.use(function (req, res, next) {
   console.log(`View count is ${JSON.stringify(req.session.views)} for ${req.session.id}`);
   next();
 });
-server.applyMiddleware({ app });
+// app.use(function (req, res, next) {
+//   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+//   next();
+// });
+server.applyMiddleware({ app, cors: corsOptions });
 
 app.listen({ port: 4000 }, () => {
   console.log(`Server ready at http://localhost:4000${server.graphqlPath}`);
