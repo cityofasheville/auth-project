@@ -1,5 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import queryString from 'query-string';
 import './index.css';
 // import registerServiceWorker from './registerServiceWorker';
 import gql from "graphql-tag";
@@ -45,12 +47,60 @@ const BookList = () => (
   </Query>
 );
 
+const BasicExample = () => (
+  <Router>
+    <div>
+      <ul>
+        <li>
+          <Link to="/">Home</Link>
+        </li>
+        <li>
+          <Link to="/about">About</Link>
+        </li>
+      </ul>
+
+      <hr />
+
+      <Route exact path="/" component={Home} />
+      <Route path="/about" component={About} />
+      <Route path="/xyz" component={Xyz} />
+    </div>
+  </Router>
+);
+
+const Xyz = (props) => {
+  const queryParams = queryString.parse(props.location.search);
+  let message = 'You are logged in!';
+  if (!queryParams.code) {
+    message = 'You failed to log in';
+  }
+  return (
+    <div>
+      <h2>XYZ!</h2>
+      <p>{message}</p>
+    </div>
+  );
+};
+
+const Home = () => (
+  <div>
+    <h2>Home</h2>
+    <BookList/>
+
+  </div>
+);
+
+const About = () => (
+  <div>
+    <h2>About</h2>
+  </div>
+);
+
 const App = () => (
   <ApolloProvider client={client}>
     <div style={{marginLeft:15 + 'px'}}>
-      <h2>Apollo app</h2>
-      <BookList/>
-      <a href='/login'>Login</a>
+      <BasicExample/>
+      <a href='https://coa-web-1.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=71faqbboap7rre4co5b1jitkq4&redirect_uri=http://localhost:3000/xyz'>Login</a>
     </div>
   </ApolloProvider>
 );

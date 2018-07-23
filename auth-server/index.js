@@ -1,6 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server-express');
 const express = require('express');
 const session = require('express-session');
+const redisStore = require('connect-redis')(session);
 const parseurl = require('parseurl');
 const cors = require('cors');
 const books = [
@@ -16,8 +17,9 @@ const books = [
   },
 ];
 
-const typeDefs = gql`
 
+
+const typeDefs = gql`
   type Book {
     title: String
     author: String
@@ -61,6 +63,10 @@ app.use(session({
   secret: 'my little secret',
   resave: false,
   saveUninitialized: true,
+  store: new redisStore({
+    host: 'redis-test-4.zwdfeb.0001.use1.cache.amazonaws.com',
+    port: 6379,
+  }),
   cookie: { 
     httpOnly: true,
     secure: 'auto',
@@ -70,6 +76,11 @@ app.use(session({
 app.use(cors(corsOptions));
 
 app.use(function (req, res, next) {
+  console.log(`HI: ${req.url}`);
+  if (!req.session) {
+    req.session = {};
+  }
+  console.log(req.url);
   if (!req.session.views) {
     req.session.views = {};
   }
@@ -82,6 +93,11 @@ app.use(function (req, res, next) {
 //   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 //   next();
 // });
+app.get('/abcd', function(req, res) {
+  console.log(`In abcd: ${req.url}`);
+  // res.send(req.url);
+  res.redirect('/graphql');
+});
 server.applyMiddleware({ app, cors: corsOptions });
 
 app.listen({ port: 4000 }, () => {
