@@ -12,8 +12,12 @@
   "dependencies": {
     "apollo-server": "^2.0.0-rc.7",
     "apollo-server-express": "^2.0.0-rc.7",
+    "axios": "^0.18.0",
+    "connect-redis": "^3.3.3",
     "cors": "^2.8.4",
     "express-session": "^1.15.6",
-    "graphql": "^0.13.2"
+    "graphql": "^0.13.2",
+    "ioredis": "^3.2.2",
+    "qs": "^6.5.2"
   }
 }
