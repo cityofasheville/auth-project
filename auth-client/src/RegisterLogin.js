@@ -8,7 +8,7 @@ const REGISTER_CODE = gql`
   mutation registerCode($code: String!) {
     registerCode(code: $code) {
       message
-      reasons
+      reason
     }
   }
 `;
@@ -27,9 +27,14 @@ class RegisterLogin extends React.Component {
 const Xyz = (props) => {
   const queryParams = queryString.parse(props.location.search);
   console.log(`Code is ${queryParams.code}`);
-
+  let value = 'not set';
   return (
-    <Mutation mutation={REGISTER_CODE}>
+    <Mutation mutation={REGISTER_CODE}
+              onCompleted = {(data) => {
+                console.log(data);
+                value = data.message;
+              }}
+    >
     {
       (registerCode, { data, error }) => {
         const retval = (data && data.message) || 'NONE';
@@ -37,8 +42,8 @@ const Xyz = (props) => {
         <div>
           <h2>XYZ!</h2>
           <p> Data is {retval}. </p>
-          <RegisterLogin registerCode = {registerCode} code = {queryParams.code}>
-            <div><p>Here we are {retval}.</p></div>
+          <RegisterLogin value = {retval} registerCode = {registerCode} code = {queryParams.code}>
+            <div><p>Here we are {value}.</p></div>
           </RegisterLogin>
         </div>
         )
