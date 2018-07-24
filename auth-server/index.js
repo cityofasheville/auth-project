@@ -30,17 +30,36 @@ const typeDefs = gql`
     "This is documentation"
     books: [Book]
   }
+
+  type LoginResult {
+    message: String
+    reason: String
+  }
+
+  type Mutation {
+    registerCode (code: String!): LoginResult
+  }
 `;
+
+const registerCode = function (parent, args, context) {
+  console.log('I am here');
+  console.log(args.code);
+  return { message: 'Hi there', reason: 'No reason' };
+};
 
 const resolvers = {
   Query: {
     books: (parent, args, context) => books.map(itm => {
+      console.log('In books');
       return {
         title: itm.title,
         author: itm.author,
         secret: itm.secret,
       }
     }),
+  },
+  Mutation: {
+    registerCode,
   },
 };
 
@@ -76,28 +95,29 @@ app.use(session({
 app.use(cors(corsOptions));
 
 app.use(function (req, res, next) {
-  console.log(`HI: ${req.url}`);
+  // console.log(`HI: ${req.url}`);
   if (!req.session) {
     req.session = {};
   }
-  console.log(req.url);
+
   if (!req.session.views) {
     req.session.views = {};
   }
   const pathname = parseurl(req).pathname;
   req.session.views[pathname] = (req.session.views[pathname] || 0) + 1;
-  console.log(`View count is ${JSON.stringify(req.session.views)} for ${req.session.id}`);
+  // console.log(`View count is ${JSON.stringify(req.session.views)} for ${req.session.id}`);
   next();
 });
 // app.use(function (req, res, next) {
 //   res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
 //   next();
 // });
-app.get('/abcd', function(req, res) {
-  console.log(`In abcd: ${req.url}`);
-  // res.send(req.url);
-  res.redirect('/graphql');
-});
+
+// app.get('/abcd', function(req, res) {
+//   console.log(`In abcd: ${req.url}`);
+//   // res.send(req.url);
+//   res.redirect('/graphql');
+// });
 server.applyMiddleware({ app, cors: corsOptions });
 
 app.listen({ port: 4000 }, () => {

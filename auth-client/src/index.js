@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Link } from "react-router-dom";
-import queryString from 'query-string';
 import './index.css';
 // import registerServiceWorker from './registerServiceWorker';
 import gql from "graphql-tag";
 import ApolloClient from "apollo-client";
 import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloProvider, Query } from "react-apollo";
-import { createHttpLink} from "apollo-link-http"
+import { createHttpLink} from "apollo-link-http";
+import Xyz from './RegisterLogin';
 
 const client = new ApolloClient({
   link: createHttpLink({
@@ -29,7 +29,6 @@ const BookList = () => (
         }
       }
     `}
-    pollInterval={7000}
   >
     {({ loading, error, data }) => {
       if (loading) return <p>Loading...</p>;
@@ -46,6 +45,7 @@ const BookList = () => (
     }}
   </Query>
 );
+//     pollInterval={7000}
 
 const BasicExample = () => (
   <Router>
@@ -68,19 +68,7 @@ const BasicExample = () => (
   </Router>
 );
 
-const Xyz = (props) => {
-  const queryParams = queryString.parse(props.location.search);
-  let message = 'You are logged in!';
-  if (!queryParams.code) {
-    message = 'You failed to log in';
-  }
-  return (
-    <div>
-      <h2>XYZ!</h2>
-      <p>{message}</p>
-    </div>
-  );
-};
+
 
 const Home = () => (
   <div>
