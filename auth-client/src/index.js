@@ -85,14 +85,13 @@ const About = () => (
 );
 
 const cognitoClientUrls = [
-  'https://coa-web-1.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=71faqbboap7rre4co5b1jitkq4&redirect_uri=http://localhost:3000/xyz',
   'https://coa-web-2.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=2uu574tlad2ajk5hmj94fnjeva&redirect_uri=http://localhost:3000/xyz',
 ]
 const App = () => (
   <ApolloProvider client={client}>
     <div style={{marginLeft:15 + 'px'}}>
       <BasicExample/>
-      <a href={cognitoClientUrls[1]}>Login</a>
+      <a href={cognitoClientUrls[0]}>Login</a>
     </div>
   </ApolloProvider>
 );

@@ -7,6 +7,14 @@ const cors = require('cors');
 const axios = require('axios');
 const jose = require('node-jose');
 const qs = require('qs');
+// TODO:
+//  1. Store the information in session
+//  2. Get information showing up in client
+//  3. Make use of the refresh token
+//  4. Add Google (and ideally get more info?)
+//  5. Do the logout workflow
+//  6. Make sure we have all error checking and logging
+//  7. Break out and libraryize
 
 const books = [
   {
@@ -34,6 +42,7 @@ const typeDefs = gql`
   }
 
   type LoginResult {
+    loggedIn: Boolean
     message: String
     reason: String
   }
@@ -45,7 +54,7 @@ const typeDefs = gql`
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
 
 const registerCode = function (parent, args, context) {
-  console.log('I am here');
+  console.log('In registerCode resolver');
   console.log(args.code);
   const headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
@@ -58,7 +67,7 @@ const registerCode = function (parent, args, context) {
 
   const data = {
     grant_type: 'authorization_code',
-    scope: 'email',
+    scope: 'email openid profile',
     client_id: appClientId,
     client_secret: 'pssq8927rtjl5q6la7pdu578qg0uatppmdblmamog6pb7rd0gq5',
     code: args.code,
@@ -66,7 +75,6 @@ const registerCode = function (parent, args, context) {
   };
 
   const cognitoUrls = [
-    'https://coa-web-1.auth.us-east-1.amazoncognito.com/oauth2/token/',
     'https://coa-web-2.auth.us-east-1.amazoncognito.com/oauth2/token/'
   ];
   // https://github.com/awslabs/aws-support-tools/blob/master/Cognito/decode-verify-jwt/decode-verify-jwt.js
@@ -77,20 +85,18 @@ const registerCode = function (parent, args, context) {
   let token = null;
   axios({
     method: 'post',
-    url: cognitoUrls[1],
+    url: cognitoUrls[0],
     data: qs.stringify(data),
     headers,
   })
   .then((response) => {
     console.log('Back with a response');
-    //console.log(response.data);
+
     token = response.data.id_token;
     sections = token.split('.');
     // get the kid from the headers prior to verification
     header = JSON.parse(jose.util.base64url.decode(sections[0]));
     kid = header.kid;
-    console.log(`The kid is ${kid}`);
-    console.log(keysUrl);
     return axios.get(keysUrl); // should cache this.
   })
   .then(response => {
@@ -106,7 +112,6 @@ const registerCode = function (parent, args, context) {
             break;
         }
       }
-      console.log(`Key index = ${keyIndex}`);
       if (keyIndex == -1) {
         throw new Error('Public key not found in jwks.json');
       }
@@ -133,21 +138,22 @@ const registerCode = function (parent, args, context) {
           if (claims.aud != appClientId) {
             throw new Error('Token was not issued for this audience');
           }
-          console.log('GOT THE CLAIMS: ' + claims);
+          console.log('GOT THE CLAIMS: ' + JSON.stringify(claims));
         })
         .catch(function() {
           console.log('Signature verification failed');
           throw new Error('Signature verification failed');
         });
       })
+      return { loggedIn: true, message: 'Hi there', reason: 'No reason' };
     }
+    console.log('I should not be here');
     throw new Error('Bad response getting Cognito keys');
   })
   .catch(error => {
     console.log('Back with an error');
     console.log(error);
   });
-  return { message: 'Hi there', reason: 'No reason' };
 };
 
 const resolvers = {
