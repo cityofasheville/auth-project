@@ -31,7 +31,8 @@ const Xyz = (props) => {
   return (
     <Mutation mutation={REGISTER_CODE}
               onCompleted = {(data) => {
-                console.log(data);
+                console.log('We are done with the mutation');
+                console.log(JSON.stringify(data.registerCode));
                 value = data.message;
               }}
     >

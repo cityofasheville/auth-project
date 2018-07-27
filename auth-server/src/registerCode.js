@@ -80,7 +80,7 @@ const registerCode = function (parent, args, context) {
       .then(result => {
         console.log('Now verify sig');
         // verify the signature
-        jose.JWS.createVerify(result).verify(token)
+        return jose.JWS.createVerify(result).verify(token)
         .then(vresult => {
           // now we can use the claims
           const claims = JSON.parse(vresult.payload.toString('ascii'));
@@ -98,13 +98,17 @@ const registerCode = function (parent, args, context) {
           if (claims.aud != appClientId) {
             throw new Error('Token was not issued for this audience');
           }
-          console.log('GOT THE CLAIMS: ' + JSON.stringify(claims));
+          // console.log('GOT THE CLAIMS: ' + JSON.stringify(claims));
           if (context.session) {
             context.session.email = claims.email;
             console.log(`Setting email to ${context.session.email}`);
           }
-          console.log(`SESSION: ${JSON.stringify(context.session)}`);
-          return { loggedIn: true, message: 'Hi there', reason: 'No reason' };
+          // console.log(`SESSION: ${JSON.stringify(context.session)}`);
+          return Promise.resolve({
+            loggedIn: true, 
+            message: 'Hi there', 
+            reason: 'No reason'
+          });
         })
         .catch(function() {
           console.log('Signature verification failed');

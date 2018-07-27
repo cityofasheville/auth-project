@@ -6,7 +6,7 @@ const parseurl = require('parseurl');
 const cors = require('cors');
 const registerCode = require('./src/registerCode');
 // TODO:
-//  1. Store the information in session
+//  XXX 1. Store the information in session
 //  2. Get information showing up in client
 //  3. Make use of the refresh token
 //  4. Add Google (and ideally get more info?)
