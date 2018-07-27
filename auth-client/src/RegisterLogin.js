@@ -7,6 +7,7 @@ import queryString from 'query-string';
 const REGISTER_CODE = gql`
   mutation registerCode($code: String!) {
     registerCode(code: $code) {
+      loggedIn
       message
       reason
     }
@@ -14,44 +15,55 @@ const REGISTER_CODE = gql`
 `;
 
 class RegisterLogin extends React.Component {
+
   componentDidMount() {
     console.log('Component mounted - code is ' + this.props.code);
     this.props.registerCode({ variables: { code: this.props.code } } );
   }
   render() {
-    //return null;
     return this.props.children;
   }
 }
 
-const Xyz = (props) => {
-  const queryParams = queryString.parse(props.location.search);
-  console.log(`Code is ${queryParams.code}`);
-  let value = 'not set';
-  return (
-    <Mutation mutation={REGISTER_CODE}
-              onCompleted = {(data) => {
-                console.log('We are done with the mutation');
-                console.log(JSON.stringify(data.registerCode));
-                value = data.message;
-              }}
-    >
-    {
-      (registerCode, { data, error }) => {
-        const retval = (data && data.message) || 'NONE';
-        return (
-        <div>
-          <h2>XYZ!</h2>
-          <p> Data is {retval}. </p>
-          <RegisterLogin value = {retval} registerCode = {registerCode} code = {queryParams.code}>
-            <div><p>Here we are {value}.</p></div>
-          </RegisterLogin>
-        </div>
-        )
+class Xyz extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isLoggedIn: false,
+      message: 'No message',
+    };
+  }
+  
+  render() {
+    const queryParams = queryString.parse(this.props.location.search);
+    console.log(`Code is ${queryParams.code}`);
+    return (
+      <Mutation mutation={REGISTER_CODE}
+                onCompleted = {(data) => {
+                  console.log('We are done with the mutation');
+                  console.log(JSON.stringify(data.registerCode));
+                  this.setState({ isLoggedIn: data.registerCode.loggedIn, message: data.registerCode.message })
+                }}
+      >
+      {
+        (registerCode, { data, error }) => {
+          return (
+          <div>
+            <h2>XYZ!</h2>
+            <RegisterLogin registerCode = {registerCode} code = {queryParams.code}>
+              <div>
+                <p>Message:  {this.state.message}.</p>
+                <br/>
+                <p>You are {this.state.isLoggedIn ? '' : 'NOT'} logged in.</p>
+              </div>
+            </RegisterLogin>
+          </div>
+          )
+        }
       }
-    }
-    </Mutation>
-  );
+      </Mutation>
+    );
+  }
 };
 
 export default Xyz;
