@@ -14,7 +14,7 @@ const REGISTER_CODE = gql`
   }
 `;
 
-class RegisterLogin extends React.Component {
+class RegisterCode extends React.Component {
 
   componentDidMount() {
     console.log('Component mounted - code is ' + this.props.code);
@@ -25,7 +25,7 @@ class RegisterLogin extends React.Component {
   }
 }
 
-class Xyz extends React.Component {
+class RegisterLogin extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -39,24 +39,22 @@ class Xyz extends React.Component {
     console.log(`Code is ${queryParams.code}`);
     return (
       <Mutation mutation={REGISTER_CODE}
-                onCompleted = {(data) => {
-                  console.log('We are done with the mutation');
-                  console.log(JSON.stringify(data.registerCode));
-                  this.setState({ isLoggedIn: data.registerCode.loggedIn, message: data.registerCode.message })
-                }}
+        onCompleted = {(data) => {
+          this.setState({ isLoggedIn: data.registerCode.loggedIn, message: data.registerCode.message });
+        }}
       >
       {
         (registerCode, { data, error }) => {
           return (
           <div>
             <h2>XYZ!</h2>
-            <RegisterLogin registerCode = {registerCode} code = {queryParams.code}>
+            <RegisterCode registerCode = {registerCode} code = {queryParams.code}>
               <div>
                 <p>Message:  {this.state.message}.</p>
                 <br/>
                 <p>You are {this.state.isLoggedIn ? '' : 'NOT'} logged in.</p>
               </div>
-            </RegisterLogin>
+            </RegisterCode>
           </div>
           )
         }
@@ -66,5 +64,5 @@ class Xyz extends React.Component {
   }
 };
 
-export default Xyz;
+export default RegisterLogin;
 

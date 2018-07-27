@@ -2,6 +2,10 @@ const axios = require('axios');
 const jose = require('node-jose');
 const qs = require('qs');
 
+const decodeToken = function(token) {
+  
+}
+
 const registerCode = function (parent, args, context) {
   console.log('In registerCode resolver');
   console.log(args.code);
@@ -48,8 +52,6 @@ const registerCode = function (parent, args, context) {
     headers,
   })
   .then((response) => {
-    console.log('Back with a response');
-
     token = response.data.id_token;
     context.session.id_token = token;
     context.session.access_token = response.data.access_token;

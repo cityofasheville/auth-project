@@ -7,7 +7,7 @@ const cors = require('cors');
 const registerCode = require('./src/registerCode');
 // TODO:
 //  XXX 1. Store the information in session
-//  2. Get information showing up in client
+//  XXX 2. Get information showing up in client
 //  3. Make use of the refresh token
 //  4. Add Google (and ideally get more info?)
 //  5. Do the logout workflow
