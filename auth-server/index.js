@@ -1,7 +1,6 @@
 const { ApolloServer, gql } = require('apollo-server-express');
 const express = require('express');
 const session = require('express-session');
-const redisStore = require('connect-redis')(session);
 const parseurl = require('parseurl');
 const cors = require('cors');
 const registerCode = require('./src/registerCode');
@@ -15,9 +14,9 @@ const decodeToken = require('./src/decodeToken');
 // TODO:
 //  XXX 1. Store the information in session
 //  XXX 2. Get information showing up in client
-//  3. Make use of the refresh token
+//  XXX 3. Make use of the refresh token
 //  4. Add Google (and ideally get more info?)
-//  5. Add redis to caching
+//  5. Add better caching
 //  6. Do the logout workflow
 //  7. Make sure we have all error checking and logging
 //  8. Break out and libraryize
@@ -62,7 +61,6 @@ const resolvers = {
   Query: {
     books: (parent, args, context) => books.map(itm => {
       console.log('In books');
-      // console.log(`Access token is ${cache.get('access_token')}`);
       return {
         title: itm.title,
         author: itm.author,
@@ -95,10 +93,6 @@ app.use(session({
   secret: 'my little secret',
   resave: false,
   saveUninitialized: true,
-  // store: new redisStore({
-  //   host: 'redis-test-4.zwdfeb.0001.use1.cache.amazonaws.com',
-  //   port: 6379,
-  // }),
   cookie: { 
     httpOnly: true,
     secure: 'auto',
@@ -108,20 +102,15 @@ app.use(session({
 app.use(cors(corsOptions));
 
 getUserData = require('./src/getUserData');
-app.use(function (req, res, next) {
-  if (req.session && req.session.id) {
-    console.log('IT HAS THE ID: ' + req.session.id);
-  } else if (req.session) {
-    console.log('IT HAS THE SESSION, BUT NO ID');
-  } else {
-    console.log('NO DAMN SESSION');
-  }
+app.use(function (req, res, next) { // Check logged in status
+  if (req.session) req.session.loggedIn =false;
+
   const c = cache.get(req.session.id);
   if (c) {
     // get the kid from the headers prior to verification
     let header = JSON.parse(jose.util.base64url.decode(c.id_token.split('.')[0]));
     kid = header.kid;
-    console.log('KID = ' + kid);
+
     decodeToken(kid, process.env.appClientId, c.id_token, 'test')
     .then(result => {
       if (result.status == 'expired') {
@@ -145,39 +134,41 @@ app.use(function (req, res, next) {
           headers,
         })
         .then((response) => {
-          // get the kid from the headers prior to verification
-          const sections = response.data.id_token.split('.');
+          if (response.status == 200) {
+            // get the kid from the headers prior to verification
+            const sections = response.data.id_token.split('.');
+            header = JSON.parse(jose.util.base64url.decode(sections[0]));
+            kid = header.kid;
+            decodeToken(kid, process.env.appClientId, response.data.id_token, 'refresh_token')
+            .then(result => {
+              if (result.status !== 'ok') throw new Error(`Error decoding token: ${result.status}`);
+              const claims = result.claims;
+              req.session.loggedIn =true;
 
-          header = JSON.parse(jose.util.base64url.decode(sections[0]));
-          kid = header.kid;
-          console.log('New kid ' + kid);
-          decodeToken(kid, process.env.appClientId, response.data.id_token, 'refresh_token')
-          .then(result => {
-            if (result.status !== 'ok') throw new Error(`Error decoding token: ${result.status}`);
-            const claims = result.claims;
-            console.log('GOT THE CLAIMS: ' + JSON.stringify(claims));
-            if (context.session) {
-              context.session.email = claims.email;
-              console.log(`Setting email to ${context.session.email}`);
-            }
-            next();
-          });           
+              cache.store(req.session.id, 
+                Object.assign(c, {
+                  id_token: response.data.id_token,
+                  access_token: response.data.access_token,
+                  // refresh_token: response.data.refresh_token,
+                }));
+              next();
+            });
+          }      
         });
       } else if (result.status == 'ok') {
+        req.session.loggedIn =true;
         console.log('result is ok!');
         next();
       } else {
         console.log('WTF!');
       }
     })
-    console.log('Kid is ' + kid);
   }
   console.log('And that is all folks');
   next();
 });
 
 app.use(function (req, res, next) {
-  // console.log(`HI: ${req.url}`);
   if (!req.session) {
     req.session = {};
   }

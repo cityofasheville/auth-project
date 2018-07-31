@@ -38,8 +38,10 @@ const registerCode = function (parent, args, context) {
     headers,
   })
   .then((response) => {
+    console.log(`KEYS: ${Object.keys(response.data)}`);
     token = response.data.id_token;
     console.log('We have the context of ' + context.req.session.id);
+    console.log(`Expires in ${response.data.expires_in}`);
     cache.store(context.req.session.id, {
       id_token: token,
       access_token: response.data.access_token,
@@ -56,6 +58,7 @@ const registerCode = function (parent, args, context) {
   })
   .then(response => {
     if (response.status == 200) {
+      console.log(`KEYS: ${Object.keys(response.data)}`);
       const keys = response.data['keys'];
       cache.store('public_keys', keys);
       return decodeToken(kid, process.env.appClientId, token)

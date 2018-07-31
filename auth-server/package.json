@@ -18,7 +18,6 @@
     "dotenv": "^6.0.0",
     "express-session": "^1.15.6",
     "graphql": "^0.13.2",
-    "ioredis": "^3.2.2",
     "node-jose": "^1.0.0",
     "qs": "^6.5.2"
   }
