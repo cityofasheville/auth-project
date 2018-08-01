@@ -15,11 +15,14 @@ const decodeToken = require('./src/decodeToken');
 //  XXX 1. Store the information in session
 //  XXX 2. Get information showing up in client
 //  XXX 3. Make use of the refresh token
-//  4. Add Google (and ideally get more info?)
+//  XXX 4. Add Google (and ideally get more info?)
 //  5. Add better caching
 //  6. Do the logout workflow
 //  7. Make sure we have all error checking and logging
 //  8. Break out and libraryize
+
+// NOTE: To add Google authentication to a project:
+//        https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html
 
 const books = [
   {
