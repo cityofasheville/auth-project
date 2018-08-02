@@ -9,6 +9,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory'
 import { ApolloProvider, Query } from "react-apollo";
 import { createHttpLink} from "apollo-link-http";
 import Xyz from './RegisterLogin';
+import LoggedOut from './RegisterLogout';
 
 const client = new ApolloClient({
   link: createHttpLink({
@@ -64,6 +65,7 @@ const BasicExample = () => (
       <Route exact path="/" component={Home} />
       <Route path="/about" component={About} />
       <Route path="/xyz" component={Xyz} />
+      <Route path="/logout" component={LoggedOut} />
     </div>
   </Router>
 );
@@ -86,12 +88,14 @@ const About = () => (
 
 const cognitoClientUrls = [
   'https://coa-web-2.auth.us-east-1.amazoncognito.com/login?response_type=code&client_id=2uu574tlad2ajk5hmj94fnjeva&redirect_uri=http://localhost:3000/xyz',
+  'https://coa-web-2.auth.us-east-1.amazoncognito.com/logout?client_id=2uu574tlad2ajk5hmj94fnjeva&logout_uri=http://localhost:3000/logout',
 ]
 const App = () => (
   <ApolloProvider client={client}>
     <div style={{marginLeft:15 + 'px'}}>
       <BasicExample/>
-      <a href={cognitoClientUrls[0]}>Login</a>
+      <a href={cognitoClientUrls[0]}>Login</a> &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+      <a href={cognitoClientUrls[1]}>Logout</a>
     </div>
   </ApolloProvider>
 );
