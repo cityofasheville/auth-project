@@ -17,6 +17,14 @@ class CacheClient {
   get(key) {
     return this.cache.get(key);
   }
+
+  del(key) {
+    this.cache.del(key);
+  }
+
+  peek(key) {
+    return this.cache.peek(key);
+  }
 }
 
 module.exports = new CacheClient();

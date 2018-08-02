@@ -5,6 +5,7 @@ const MemoryStore = require('memorystore')(session)
 const parseurl = require('parseurl');
 const cors = require('cors');
 const registerCode = require('./src/registerCode');
+const logout = require('./src/logout');
 const axios = require('axios');
 const jose = require('node-jose');
 const qs = require('qs');
@@ -58,6 +59,7 @@ const typeDefs = gql`
 
   type Mutation {
     registerCode (code: String!): LoginResult
+    logout: LoginResult
   }
 `;
 
@@ -74,6 +76,7 @@ const resolvers = {
   },
   Mutation: {
     registerCode,
+    logout,
   },
 };
 
@@ -156,7 +159,6 @@ app.use(function (req, res, next) { // Check logged in status
                 Object.assign(c, {
                   id_token: response.data.id_token,
                   access_token: response.data.access_token,
-                  // refresh_token: response.data.refresh_token,
                 }));
               next();
             });
