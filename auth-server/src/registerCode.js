@@ -44,39 +44,26 @@ const registerCode = function (parent, args, context) {
       access_token: response.data.access_token,
       refresh_token: response.data.refresh_token,
     });
-    cache.store('id_token', token);
-    cache.store('access_token', response.data.access_token);
-    cache.store('refresh_token', response.data.refresh_token);
     sections = token.split('.');
     // get the kid from the headers prior to verification
     header = JSON.parse(jose.util.base64url.decode(sections[0]));
     kid = header.kid;
-  //   return getPublicKeys();
-  // })
-  // .then(keys => {
+
     return decodeToken(kid, process.env.appClientId, token)
     .then(result => {
       if (result.status !== 'ok') throw new Error(`Error decoding token: ${result.status}`);
       const claims = result.claims;
-      console.log('GOT THE CLAIMS: ' + JSON.stringify(claims));
       if (context.session) {
         context.session.email = claims.email;
         console.log(`Setting email to ${context.session.email}`);
       }
-      // console.log(`SESSION: ${JSON.stringify(context.session)}`);
-      return Promise.resolve({
-        loggedIn: true, 
-        message: 'Hi there', 
-        reason: 'No reason'
-      });
-    }); // NEWNEWNEWNEW
+      return Promise.resolve({ loggedIn: true, message: 'Hi there', reason: 'No reason' });
+    });
 
-    console.log('I should not be here');
     throw new Error('Bad response getting Cognito keys');
   })
   .catch(error => {
-    console.log('Back with an error');
-    console.log(error);
+    console.log(`Back with an error ${error}`);
   });
 };
 

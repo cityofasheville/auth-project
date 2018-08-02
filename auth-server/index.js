@@ -171,8 +171,7 @@ app.use(function (req, res, next) { // Check logged in status
       }
     })
   }
-  console.log('And that is all folks');
-  next();
+  next(); //
 });
 
 app.use(function (req, res, next) {
