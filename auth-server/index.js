@@ -19,7 +19,7 @@ const decodeToken = require('./src/decodeToken');
 //  XXX 3. Make use of the refresh token
 //  XXX 4. Add Google (and ideally get more info?)
 //  XXX 5. Add better caching
-//  6. Do the logout workflow
+//  XXX 6. Do the logout workflow
 //  7. Make sure we have all error checking and logging
 //  8. Break out and libraryize
 
