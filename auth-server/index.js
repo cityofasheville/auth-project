@@ -1,6 +1,7 @@
 const { ApolloServer, gql } = require('apollo-server-express');
 const express = require('express');
 const session = require('express-session');
+const MemoryStore = require('memorystore')(session)
 const parseurl = require('parseurl');
 const cors = require('cors');
 const registerCode = require('./src/registerCode');
@@ -16,7 +17,7 @@ const decodeToken = require('./src/decodeToken');
 //  XXX 2. Get information showing up in client
 //  XXX 3. Make use of the refresh token
 //  XXX 4. Add Google (and ideally get more info?)
-//  5. Add better caching
+//  XXX 5. Add better caching
 //  6. Do the logout workflow
 //  7. Make sure we have all error checking and logging
 //  8. Break out and libraryize
@@ -96,6 +97,9 @@ app.use(session({
   secret: 'my little secret',
   resave: false,
   saveUninitialized: true,
+  store: new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  }),
   cookie: { 
     httpOnly: true,
     secure: 'auto',

@@ -1,17 +1,21 @@
-const redis = require('redis');
-const useRedis = false;
+const LRU = require('lru-cache');
+const options = {
+  max: 1024 * 250,
+  length: function (val, key) { return (val.length + key.length) },
+  maxAge: 1000 * 60 * 60 * 24,
+};
 
 class CacheClient {
   constructor() {
-    this.cache = {};
+    this.cache = LRU(options);
   }
 
-  store(key, value) {
-    this[key] = value;
+  store(key, value, hours) {
+    this.cache.set(key, value);
   }
 
   get(key) {
-    return this[key];
+    return this.cache.get(key);
   }
 }
 

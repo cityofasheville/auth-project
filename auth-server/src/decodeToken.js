@@ -1,22 +1,26 @@
 const jose = require('node-jose');
 const cache = require('./cache');
+const getPublicKeys = require('./getPublicKeys');
 
 const decodeToken = function(kid, appClientId, token, type = 'authorization_code') {
   let shortExpire = 0;
-  const publicKeys = cache.get('public_keys');
+  // const publicKeys = cache.get('public_keys');
+  return getPublicKeys()
+  .then(publicKeys => {
   // Search for the kid in the downloaded public keys
-  let keyIndex = -1;
-  for (let i=0; i < publicKeys.length; i++) {
-    if (kid == publicKeys[i].kid) {
-        keyIndex = i;
-        break;
+    let keyIndex = -1;
+    for (let i=0; i < publicKeys.length; i++) {
+      if (kid == publicKeys[i].kid) {
+          keyIndex = i;
+          break;
+      }
     }
-  }
-  if (keyIndex == -1) {
-    throw new Error('Public key not found in jwks.json');
-  }
-  // Construct the public key
-  return jose.JWK.asKey(publicKeys[keyIndex])
+    if (keyIndex == -1) {
+      throw new Error('Public key not found in jwks.json');
+    }
+    // Construct the public key
+    return jose.JWK.asKey(publicKeys[keyIndex])
+  })
   .then(result => {
     // Verify the signature
     return jose.JWS.createVerify(result).verify(token)
