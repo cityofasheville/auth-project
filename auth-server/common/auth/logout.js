@@ -1,4 +1,5 @@
-const cache = require('./cache');
+const cache = require('../cache/cache');
+
 
 const logout = function (parent, args, context) {
   cache.del(context.req.session.id);

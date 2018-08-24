@@ -1,4 +1,4 @@
-const cache = require('./cache');
+const cache = require('../cache/cache');
 const axios = require('axios');
 
 const getPublicKeys = function () {

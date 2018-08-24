@@ -3,7 +3,7 @@ const jose = require('node-jose');
 const decodeToken = require('./decodeToken');
 const getPublicKeys = require('./getPublicKeys');
 const qs = require('qs');
-const cache = require('./cache');
+const cache = require('../cache/cache');
 
 const registerCode = function (parent, args, context) {
   console.log('In registerCode resolver');
@@ -48,10 +48,11 @@ const registerCode = function (parent, args, context) {
     // get the kid from the headers prior to verification
     header = JSON.parse(jose.util.base64url.decode(sections[0]));
     kid = header.kid;
-
+    console.log('Here I am');
     return decodeToken(kid, process.env.appClientId, token)
     .then(result => {
       if (result.status !== 'ok') throw new Error(`Error decoding token: ${result.status}`);
+      console.log(JSON.stringify(result.claims));
       const claims = result.claims;
       if (context.session) {
         context.session.email = claims.email;

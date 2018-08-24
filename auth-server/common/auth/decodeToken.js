@@ -1,5 +1,5 @@
 const jose = require('node-jose');
-const cache = require('./cache');
+const cache = require('../cache/cache');
 const getPublicKeys = require('./getPublicKeys');
 
 const decodeToken = function(kid, appClientId, token, type = 'authorization_code') {

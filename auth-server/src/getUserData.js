@@ -1,4 +1,4 @@
-const cache = require('./cache');
+const cache = require('../common/cache/cache');
 
 module.exports = function (context) {
   let userdata = null;
