@@ -10,10 +10,6 @@ const cache = require('./cache');
 const { checkLogin } = require('coa-web-login');
 const GRAPHQL_PORT = process.env.PORT || 4000;
 
-// TODO:
-//  7. Make sure we have all error checking and logging
-//  8. Break out and libraryize
-
 const server = new ApolloServer({ 
   typeDefs: require('./schema'),
   resolvers: require('./resolvers'),
