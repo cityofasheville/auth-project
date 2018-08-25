@@ -14,9 +14,10 @@ const resolverMap = {
 };
 
 const apiResolvers = require('./api').resolvers;
-const commonResolvers = require('./common').resolvers;
+const loginResolvers = require('coa-web-login').graphql.resolvers;
+
 module.exports = merge(
   resolverMap,
   apiResolvers,
-  commonResolvers
+  loginResolvers
 );

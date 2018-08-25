@@ -13,6 +13,6 @@ const baseSchema = `
 `;
 
 const apiSchema = require('./api').schema;
-const commonSchema = require('./common').schema;
+const loginSchema = require('coa-web-login').graphql.schema;
 
-module.exports = baseSchema.concat(apiSchema.concat(commonSchema));
+module.exports = baseSchema.concat(apiSchema.concat(loginSchema));

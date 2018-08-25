@@ -4,20 +4,15 @@ const session = require('express-session');
 const MemoryStore = require('memorystore')(session)
 const parseurl = require('parseurl');
 const cors = require('cors');
-const apiSchema = require('./api/api_schema');
 
 require('dotenv').config();
-const cache = require('./common/cache/cache');
-const { checkLogin } = require('./common/auth');
+const cache = require('./cache');
+const { checkLogin } = require('coa-web-login');
 const GRAPHQL_PORT = process.env.PORT || 4000;
 
 // TODO:
 //  7. Make sure we have all error checking and logging
 //  8. Break out and libraryize
-
-// NOTE: To add Google authentication to a project:
-//        https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html
-
 
 const server = new ApolloServer({ 
   typeDefs: require('./schema'),
@@ -25,6 +20,7 @@ const server = new ApolloServer({
   context: ({ req }) => ({
     session: req.session,
     req: req,
+    cache,
   }),
 });
 
@@ -51,7 +47,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(function (req, res, next) { // Check logged in status
-  checkLogin(req);
+  checkLogin(req, cache.get(req.session.id), cache);
   next(); //
 });
 
