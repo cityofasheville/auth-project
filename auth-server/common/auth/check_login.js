@@ -15,8 +15,6 @@ const checkLogin = function (req) {
     decodeToken(kid, process.env.appClientId, c.id_token, 'test')
     .then(result => {
       if (result.status == 'expired') {
-        // Do stuff
-        console.log('Result is expired');
         // for refresh see https://docs.aws.amazon.com/cognito/latest/developerguide/token-endpoint.html
         const refreshData = {
           grant_type: 'refresh_token',
@@ -51,23 +49,17 @@ const checkLogin = function (req) {
                   id_token: response.data.id_token,
                   access_token: response.data.access_token,
                 }));
-              next();
             });
           }      
         });
       } else if (result.status == 'ok') {
         req.session.loggedIn =true;
-        console.log('result is ok - we are logged in!');
-        next();
       } else {
-        console.log('WTF!');
+        throw new Error(`Login expired - you will need to log in again (Status: ${result.status})`);
       }
     })
     .catch(err => {
-      if (err) {
-        console.log(`Error checking login: ${JSON.stringify(err)}`);
-      }
-      return [];
+      if (err) console.log(`Error checking login: ${err}`);
     });
   }
 };

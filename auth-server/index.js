@@ -18,12 +18,10 @@ const GRAPHQL_PORT = process.env.PORT || 4000;
 // NOTE: To add Google authentication to a project:
 //        https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-user-pools-social-idp.html
 
-const typeDefs = require('./schema');
-const resolvers = require('./resolvers');
 
 const server = new ApolloServer({ 
-  typeDefs,
-  resolvers,
+  typeDefs: require('./schema'),
+  resolvers: require('./resolvers'),
   context: ({ req }) => ({
     session: req.session,
     req: req,
@@ -52,9 +50,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-getUserData = require('./src/getUserData');
 app.use(function (req, res, next) { // Check logged in status
-  console.log('Checking if we are logged in ' + req.baseUrl);
   checkLogin(req);
   next(); //
 });

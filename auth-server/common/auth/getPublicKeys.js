@@ -10,7 +10,6 @@ const getPublicKeys = function () {
     return axios.get(keysUrl)
     .then(response => {
       if (response.status == 200) {
-        console.log(`KEYS: ${Object.keys(response.data)}`);
         const keys = response.data['keys'];
         cache.store('public_keys', keys, 24);
         return Promise.resolve(keys);

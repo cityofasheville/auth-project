@@ -33,9 +33,7 @@ const decodeToken = function(kid, appClientId, token, type = 'authorization_code
         shortExpire = 3570;
       }
       current_ts = shortExpire + Math.floor(new Date() / 1000);
-      console.log(`TS = ${current_ts}, exp = ${claims.exp}`);
       if (current_ts > claims.exp) {
-        console.log('Token is expired!');
         return Promise.resolve({ status: 'expired', claims });
       }
 
@@ -46,7 +44,6 @@ const decodeToken = function(kid, appClientId, token, type = 'authorization_code
       return Promise.resolve({ status: 'ok', claims });
     })
     .catch(function(error) {
-      console.log('Signature verification failed');
       throw new Error('Signature verification failed ' + error);
     });
   });
