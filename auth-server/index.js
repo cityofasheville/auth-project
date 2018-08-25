@@ -8,7 +8,7 @@ const apiSchema = require('./api/api_schema');
 
 require('dotenv').config();
 const cache = require('./common/cache/cache');
-const checkLogin = require('./common/auth/check_login');
+const { checkLogin } = require('./common/auth');
 const GRAPHQL_PORT = process.env.PORT || 4000;
 
 // TODO:

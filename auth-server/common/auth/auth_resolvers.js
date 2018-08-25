@@ -1,4 +1,4 @@
-const registerCode = require('./registerCode');
+const registerCode = require('./register_code');
 const logout = require('./logout');
 
 const resolvers = {

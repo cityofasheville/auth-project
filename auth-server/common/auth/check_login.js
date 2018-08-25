@@ -1,5 +1,5 @@
 const cache = require('../cache/cache');
-const decodeToken = require('./decodeToken');
+const decodeToken = require('./decode_token');
 const jose = require('node-jose');
 const axios = require('axios');
 const qs = require('qs');

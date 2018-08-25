@@ -1,8 +1,8 @@
-const authResolvers = require('./auth').resolvers;
+const authResolvers = require('./auth').graphql.resolvers;
 
 module.exports = {
   schema: [
-    require('./auth').schema,
+    require('./auth').graphql.schema,
   ],
   resolvers: authResolvers,
 };

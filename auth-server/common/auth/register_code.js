@@ -1,7 +1,7 @@
 const axios = require('axios');
 const jose = require('node-jose');
-const decodeToken = require('./decodeToken');
-const getPublicKeys = require('./getPublicKeys');
+const decodeToken = require('./decode_token');
+const getPublicKeys = require('./get_public_keys');
 const qs = require('qs');
 const cache = require('../cache/cache');
 
