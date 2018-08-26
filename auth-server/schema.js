@@ -12,7 +12,10 @@ const baseSchema = `
   }
 `;
 
-const apiSchema = require('./api').schema;
-const loginSchema = require('coa-web-login').graphql.schema;
+const schemas = [
+  baseSchema,
+  require('./api').schema,
+  require('coa-web-login').graphql.schema
+];
 
-module.exports = baseSchema.concat(apiSchema.concat(loginSchema));
+module.exports = schemas.reduce((accum, cur) => accum.concat(cur), '');
