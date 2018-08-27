@@ -6,10 +6,20 @@ const parseurl = require('parseurl');
 const cors = require('cors');
 
 require('dotenv').config();
-const cache = require('./cache');
+const CacheClient = require('coa-web-cache');
 const { checkLogin } = require('coa-web-login');
 const GRAPHQL_PORT = process.env.PORT || 4000;
 
+cache = new CacheClient();
+let sessionCache = null;
+const cacheMethod = process.env.cache_method || 'memory';
+if (cacheMethod === 'memory') {
+  sessionCache = new MemoryStore({
+    checkPeriod: 86400000 // prune expired entries every 24h
+  });
+} else {
+  throw new Error('Redis caching not yet implemented');
+}
 const server = new ApolloServer({ 
   typeDefs: require('./schema'),
   resolvers: require('./resolvers'),
@@ -26,9 +36,7 @@ app.use(session({
   secret: process.env.sessionSecret, 
   resave: false,
   saveUninitialized: true,
-  store: new MemoryStore({
-    checkPeriod: 86400000 // prune expired entries every 24h
-  }),
+  store: sessionCache,
   cookie: { 
     httpOnly: true,
     secure: 'auto',
