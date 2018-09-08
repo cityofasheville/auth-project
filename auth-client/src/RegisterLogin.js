@@ -5,8 +5,8 @@ import queryString from 'query-string';
 
 
 const REGISTER_CODE = gql`
-  mutation registerCode($code: String!) {
-    registerCode(code: $code) {
+  mutation registerCode($code: String!, $redirect_uri: String!) {
+    registerCode(code: $code, redirect_uri: $redirect_uri) {
       loggedIn
       message
       reason
@@ -18,7 +18,10 @@ class RegisterCode extends React.Component {
 
   componentDidMount() {
     console.log('Component mounted - code is ' + this.props.code);
-    this.props.registerCode({ variables: { code: this.props.code } } );
+    this.props.registerCode({ variables: {
+      code: this.props.code,
+      redirect_uri: 'http://localhost:3000/login',
+    } } );
   }
   render() {
     return this.props.children;
