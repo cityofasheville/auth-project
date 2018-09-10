@@ -23,10 +23,10 @@ const BookList = () => (
   <Query
     query={gql`
       {
-        books {
-          author
-          title
-          secret
+        employee {
+          id
+          name
+          position
         }
       }
     `}
@@ -35,13 +35,10 @@ const BookList = () => (
       if (loading) return <p>Loading...</p>;
       if (error) return <p>Error :(</p>;
       return <div>
-        <h2>List of Books</h2>
-        {data.books.map(({ author, title, secret }) => (
-          <div key={author}>
-            <p><b>{`${author}:`}</b> {`${title}`}</p>
-            <p>The secret is {secret}</p>
-          </div>
-        ))}
+        <h2>Employee</h2>
+        <div key={data.employee.id}>
+          <p><b>{`${data.employee.name}:`}</b> {`${data.employee.position}`}</p>
+        </div>
       </div>
     }}
   </Query>
