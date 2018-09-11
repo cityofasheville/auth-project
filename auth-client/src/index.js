@@ -18,26 +18,109 @@ const client = new ApolloClient({
   }),
   cache: new InMemoryCache(),
 });
+//         employee (id: 1316) {
+/*
+      {
+        employee  (id: 1316) {
+          id
+          name
+          position
+          reviewable
+          not_reviewable_reason
+          supervisor_id
+          last_reviewed
+          current_review
+          employees {
+            name
+          }
+          reviews {
+            id
+          }
+        }
+        review (id: 3345) {
+          id
+          status
+          questions {
+            id
+            question
+            answer
+          }
+          responses {
+            question_id
+            Response
+          }
+        }
+      }
+
+
+*/
 
 const BookList = () => (
   <Query
     query={gql`
-      {
-        employee {
-          id
+    {
+      employee  (id: 1316) {
+        id
+        name
+        position
+        reviewable
+        not_reviewable_reason
+        supervisor_id
+        last_reviewed
+        current_review
+        employees {
           name
-          position
+        }
+        reviews {
+          id
         }
       }
+      review {
+        id
+        status
+        questions {
+          id
+          question
+          answer
+        }
+        responses {
+          question_id
+          Response
+        }
+      }
+    }
     `}
   >
     {({ loading, error, data }) => {
       if (loading) return <p>Loading...</p>;
-      if (error) return <p>Error :(</p>;
+      if (error) return <p>Error :( - {JSON.stringify(error)} </p>;
+      console.log(data);
+      const employee = data.employee ? data.employee : { id: 0, name: "none", position: "none"};
+      let review = {};
+      if (data.review && data.review.id) review = data.review;
+      let counter = 1;
       return <div>
-        <h2>Employee</h2>
-        <div key={data.employee.id}>
-          <p><b>{`${data.employee.name}:`}</b> {`${data.employee.position}`}</p>
+        <h2>Review</h2>
+        <div key = {review.id}>
+          {review.id}
+        </div>
+        <h2>Employee </h2>
+        <div key={employee.id}>
+          <p><b>{`${employee.name}:`}</b> {`${employee.position}`}</p>
+          <ul>
+            {Object.keys(employee).map(itm => {
+              console.log(itm);
+              if (itm !== 'employees' && itm !== 'reviews')
+                return <li key = {counter++} >{itm}: {employee[itm]}</li>
+              else {
+                if (itm === 'employees')
+                  return <li key = {counter++}>{employee[itm][0].name}</li>
+                else {
+                  return <li key = {counter++}>{employee.reviews[0].id}</li>
+                }
+              }
+            })}
+          </ul>
         </div>
       </div>
     }}
